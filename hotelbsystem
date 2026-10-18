@@ -1,0 +1,171 @@
+1. HOTEL BOOKING SYSTEM
+A. Create these controls
+TextBoxes
+txtGuestName
+txtGuestAge
+txtNights
+txtGuests
+ComboBox
+cmbRoomType — Standard, Normal, Hight
+CheckBox
+chkBreakfast
+Buttons
+btnCalculate
+btnClear
+btnExit
+Label
+lblResult
+B. Complete C# code
+using System;
+using System.Windows.Forms;
+
+namespace HotelBookingSystem
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            cmbRoomType.Items.Add("Standard");
+            cmbRoomType.Items.Add("Normal");
+            cmbRoomType.Items.Add("Hight");
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            string guestName = txtGuestName.Text.Trim();
+
+            if (guestName == "")
+            {
+                MessageBox.Show("Enter guest name.");
+                return;
+            }
+
+            if (!int.TryParse(txtGuestAge.Text, out int age) ||
+                !int.TryParse(txtNights.Text, out int nights) ||
+                !int.TryParse(txtGuests.Text, out int guests))
+            {
+                MessageBox.Show("Enter valid numeric values.");
+                return;
+            }
+
+            if (age < 18 || age > 90)
+            {
+                MessageBox.Show("Age must be between 18 and 90.");
+                return;
+            }
+
+            if (nights < 1 || nights > 30)
+            {
+                MessageBox.Show("Nights must be between 1 and 30.");
+                return;
+            }
+
+            if (guests < 1 || guests > 6)
+            {
+                MessageBox.Show("Guests must be between 1 and 6.");
+                return;
+            }
+
+            bool bookingApproved = true;
+            double rate = 0;
+
+            switch (cmbRoomType.Text)
+            {
+                case "Standard":
+                    rate = 50;
+                    if (guests > 2)
+                        bookingApproved = false;
+                    break;
+
+                case "Normal":
+                    rate = 80;
+                    if (guests > 4)
+                        bookingApproved = false;
+                    break;
+
+                case "Hight":
+                    rate = 130;
+                    if (guests > 6)
+                        bookingApproved = false;
+                    break;
+
+                default:
+                    MessageBox.Show("Select a room type.");
+                    return;
+            }
+
+            if (!bookingApproved)
+            {
+                MessageBox.Show("The selected room cannot accommodate these guests.");
+                return;
+            }
+
+            double basicCost = rate * nights;
+
+            double breakfastCost = 0;
+
+            if (chkBreakfast.Checked)
+            {
+                breakfastCost = 10 * guests * nights;
+            }
+
+            double subtotal = basicCost + breakfastCost;
+
+            double discountRate = 0;
+
+            if (nights >= 10)
+                discountRate = 0.12;
+            else if (nights >= 5)
+                discountRate = 0.05;
+
+            double discount = subtotal * discountRate;
+
+            double seniorDiscount = 0;
+
+            if (age >= 60)
+            {
+                seniorDiscount = subtotal * 0.05;
+            }
+
+            double serviceCharge = 0;
+
+            if (guests > 4)
+            {
+                serviceCharge = subtotal * 0.05;
+            }
+
+            double total = subtotal - discount
+                         - seniorDiscount + serviceCharge;
+
+            lblResult.Text =
+                "Guest Name: " + guestName +
+                "\nRoom Type: " + cmbRoomType.Text +
+                "\nBasic Cost: " + basicCost.ToString("C2") +
+                "\nBreakfast Cost: " + breakfastCost.ToString("C2") +
+                "\nNight Discount: " + discount.ToString("C2") +
+                "\nSenior Discount: " + seniorDiscount.ToString("C2") +
+                "\nService Charge: " + serviceCharge.ToString("C2") +
+                "\nTotal Cost: " + total.ToString("C2");
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtGuestName.Clear();
+            txtGuestAge.Clear();
+            txtNights.Clear();
+            txtGuests.Clear();
+
+            cmbRoomType.SelectedIndex = -1;
+            chkBreakfast.Checked = false;
+
+            lblResult.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
+}
