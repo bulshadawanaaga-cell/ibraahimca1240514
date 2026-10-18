@@ -1,0 +1,153 @@
+4. COURSE REGISTRATION FEE SYSTEM
+This project calculates a student's registration fee according to their study year, number of courses, accommodation, and transport.
+A. Create these controls
+TextBoxes
+txtStudentName
+txtStudentID
+txtCourses
+ComboBox
+cmbStudyLevel — Year 1, Year 2, Year 3, Year 4
+CheckBoxes
+chkAccommodation
+chkTransport
+Buttons
+btnCalculate
+btnClear
+btnExit
+Label
+lblResult
+B. Complete C# code
+using System;
+using System.Windows.Forms;
+
+namespace CourseRegistrationSystem
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            cmbStudyLevel.Items.Add("Year 1");
+            cmbStudyLevel.Items.Add("Year 2");
+            cmbStudyLevel.Items.Add("Year 3");
+            cmbStudyLevel.Items.Add("Year 4");
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            string studentName = txtStudentName.Text.Trim();
+            string studentID = txtStudentID.Text.Trim();
+
+            if (studentName == "" || studentID == "")
+            {
+                MessageBox.Show("Enter student name and ID.");
+                return;
+            }
+
+            if (!int.TryParse(txtCourses.Text, out int courses))
+            {
+                MessageBox.Show("Enter a valid number of courses.");
+                return;
+            }
+
+            if (courses < 1 || courses > 8)
+            {
+                MessageBox.Show("Courses must be between 1 and 8.");
+                return;
+            }
+
+            double feePerCourse = 0;
+
+            switch (cmbStudyLevel.Text)
+            {
+                case "Year 1":
+                    feePerCourse = 40;
+                    break;
+
+                case "Year 2":
+                    feePerCourse = 45;
+                    break;
+
+                case "Year 3":
+                    feePerCourse = 50;
+                    break;
+
+                case "Year 4":
+                    feePerCourse = 55;
+                    break;
+
+                default:
+                    MessageBox.Show("Select a study level.");
+                    return;
+            }
+
+            double tuitionFee = feePerCourse * courses;
+
+            double accommodationFee = 0;
+
+            if (chkAccommodation.Checked)
+                accommodationFee = 120;
+
+            double transportFee = 0;
+
+            if (chkTransport.Checked)
+                transportFee = 50;
+
+            double subtotal = tuitionFee
+                            + accommodationFee
+                            + transportFee;
+
+            double courseDiscount = 0;
+
+            if (courses >= 6)
+                courseDiscount = tuitionFee * 0.10;
+
+            double serviceDiscount = 0;
+
+            if (chkAccommodation.Checked &&
+                chkTransport.Checked &&
+                courses >= 5)
+            {
+                serviceDiscount = tuitionFee * 0.05;
+            }
+
+            double totalDiscount = courseDiscount + serviceDiscount;
+
+            double finalFee = subtotal - totalDiscount;
+
+            lblResult.Text =
+                "Student Name: " + studentName +
+                "\nStudent ID: " + studentID +
+                "\nStudy Level: " + cmbStudyLevel.Text +
+                "\nNumber of Courses: " + courses +
+                "\nTuition Fee: " + tuitionFee.ToString("C2") +
+                "\nAccommodation Fee: " +
+                accommodationFee.ToString("C2") +
+                "\nTransport Fee: " + transportFee.ToString("C2") +
+                "\nCourse Discount: " + courseDiscount.ToString("C2") +
+                "\nService Discount: " + serviceDiscount.ToString("C2") +
+                "\nTotal Discount: " + totalDiscount.ToString("C2") +
+                "\nFinal Registration Fee: " + finalFee.ToString("C2");
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtStudentName.Clear();
+            txtStudentID.Clear();
+            txtCourses.Clear();
+
+            cmbStudyLevel.SelectedIndex = -1;
+
+            chkAccommodation.Checked = false;
+            chkTransport.Checked = false;
+
+            lblResult.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
+}
