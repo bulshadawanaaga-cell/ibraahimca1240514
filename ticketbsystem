@@ -1,0 +1,162 @@
+2. TICKET BOOKING SYSTEM
+A. Create these controls
+TextBoxes
+txtPassengerAge
+txtTickets
+txtBaggageWeight
+txtTicketPrice
+ComboBox
+cmbTravelClass — Economy, Business, First Class
+CheckBox
+chkInsurance
+Buttons
+btnCalculate
+btnClear
+btnExit
+Label
+lblResult
+B. Complete C# code
+using System;
+using System.Windows.Forms;
+
+namespace TicketBookingSystem
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            cmbTravelClass.Items.Add("Economy");
+            cmbTravelClass.Items.Add("Business");
+            cmbTravelClass.Items.Add("First Class");
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtPassengerAge.Text, out int age) ||
+                !int.TryParse(txtTickets.Text, out int tickets) ||
+                !double.TryParse(txtBaggageWeight.Text, out double baggage) ||
+                !double.TryParse(txtTicketPrice.Text, out double ticketPrice))
+            {
+                MessageBox.Show("Enter valid numeric values.");
+                return;
+            }
+
+            bool bookingApproved = true;
+            string reason = "";
+
+            if (age < 1 || age > 100)
+            {
+                bookingApproved = false;
+                reason = "Age must be between 1 and 100.";
+            }
+            else if (tickets < 1 || tickets > 5)
+            {
+                bookingApproved = false;
+                reason = "Tickets must be between 1 and 5.";
+            }
+            else if (baggage < 0 || baggage > 50)
+            {
+                bookingApproved = false;
+                reason = "Baggage must be between 0 and 50 kg.";
+            }
+            else if (ticketPrice <= 0)
+            {
+                bookingApproved = false;
+                reason = "Ticket price must be greater than zero.";
+            }
+            else if (age < 12 && cmbTravelClass.Text == "First Class")
+            {
+                bookingApproved = false;
+                reason = "Passengers below 12 cannot book First Class.";
+            }
+            else if (cmbTravelClass.SelectedIndex == -1)
+            {
+                bookingApproved = false;
+                reason = "Select a travel class.";
+            }
+
+            if (!bookingApproved)
+            {
+                MessageBox.Show(reason);
+                return;
+            }
+
+            double classMultiplier = 1;
+
+            switch (cmbTravelClass.Text)
+            {
+                case "Economy":
+                    classMultiplier = 1;
+                    break;
+
+                case "Business":
+                    classMultiplier = 1.5;
+                    break;
+
+                case "First Class":
+                    classMultiplier = 2;
+                    break;
+            }
+
+            double basicCost = ticketPrice * tickets * classMultiplier;
+
+            double ticketDiscount = 0;
+
+            if (tickets == 5)
+                ticketDiscount = basicCost * 0.10;
+            else if (tickets >= 3)
+                ticketDiscount = basicCost * 0.05;
+
+            double childDiscount = 0;
+
+            if (age < 12)
+                childDiscount = basicCost * 0.20;
+
+            double seniorDiscount = 0;
+
+            if (age >= 60)
+                seniorDiscount = basicCost * 0.10;
+
+            double insuranceCost = 0;
+
+            if (chkInsurance.Checked)
+                insuranceCost = 25 * tickets;
+
+            double total = basicCost - ticketDiscount
+                         - childDiscount - seniorDiscount
+                         + insuranceCost;
+
+            lblResult.Text =
+                "Passenger Age: " + age +
+                "\nNumber of Tickets: " + tickets +
+                "\nTravel Class: " + cmbTravelClass.Text +
+                "\nBaggage: " + baggage + " kg" +
+                "\nBasic Ticket Cost: " + basicCost.ToString("C2") +
+                "\nTicket Discount: " + ticketDiscount.ToString("C2") +
+                "\nChild Discount: " + childDiscount.ToString("C2") +
+                "\nSenior Discount: " + seniorDiscount.ToString("C2") +
+                "\nInsurance: " + insuranceCost.ToString("C2") +
+                "\nFinal Cost: " + total.ToString("C2");
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtPassengerAge.Clear();
+            txtTickets.Clear();
+            txtBaggageWeight.Clear();
+            txtTicketPrice.Clear();
+
+            cmbTravelClass.SelectedIndex = -1;
+            chkInsurance.Checked = false;
+
+            lblResult.Text = "";
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
+}
