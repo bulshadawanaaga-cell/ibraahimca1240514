@@ -1,4 +1,3 @@
-Haa. Waxaan ka soo saaray **qodobada ugu muhiimsan** ee Chapter 1, si aad ugu fududaato inaad barato ama imtixaan ugu diyaar garowdo. 
 
 ## 📚 Chapter 1: Introduction to Visual C#
 
